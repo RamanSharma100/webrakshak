@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRakshak - Site Blocked</title>
+
+    <style>
+        :root {
+            --bg: #0b0c10;
+            --glass: rgba(20, 22, 30, 0.7);
+            --danger: #ff3333;
+            --text: #ffffff;
+            --muted: #a0a5b1;
+            --glow: rgba(255, 51, 51, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, Segoe UI, Roboto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+
+            background-image:
+                radial-gradient(circle at 15% 25%, rgba(20, 20, 30, 1) 0%, transparent 25%),
+                radial-gradient(circle at 85% 75%, rgba(255, 51, 51, 0.06) 0%, transparent 25%);
+        }
+
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--glow), transparent 70%);
+            animation: pulse 2.5s infinite;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 51, 51, 0.2);
+            border-radius: 18px;
+            padding: 45px;
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            color: var(--danger);
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .url {
+            background: #00000070;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #ff8a8a;
+            word-break: break-all;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 51, 51, 0.2);
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--muted);
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: white;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: #555;
+            margin-top: 25px;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(.95);
+                opacity: .5;
+            }
+
+            50% {
+                transform: scale(1.08);
+                opacity: .85;
+            }
+
+            100% {
+                transform: scale(.95);
+                opacity: .5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glow"></div>
+
+    <div class="card">
+
+        <div class="icon">🛡️</div>
+
+        <h1>Access Blocked</h1>
+
+        <p>
+            WebRakshak prevented access to this page because it may contain
+            malicious, scam, or unsafe content.
+        </p>
+
+        <div class="url" id="blockedUrl">
+            Detecting URL...
+        </div>
+
+        <button onclick="goBack()">Return to Safety</button>
+
+        <div class="footer">
+            Protected by WebRakshak Security Engine
+        </div>
+
+    </div>
+
+    <script>
+
+        const params = new URLSearchParams(window.location.search)
+        const blockedUrl = params.get("blocked")
+
+        const display = document.getElementById("blockedUrl")
+
+        if (blockedUrl) {
+            display.innerText = decodeURIComponent(blockedUrl)
+            sendTrace(`Blocked domain attempt: ${blockedUrl}`)
+        }
+        else {
+            display.innerText = "Unknown URL"
+        }
+
+        function goBack() {
+
+            sendTrace(`User clicked Return to Safety for ${blockedUrl || "unknown"}`)
+
+            if (history.length > 2) {
+                history.back()
+            }
+            else {
+                location.href = "https://google.com"
+            }
+
+        }
+
+        function sendTrace(message) {
+
+            fetch("/api/trace", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ trace: message })
+            }).catch(() => { })
+
+        }
+
+    </script>
+
+</body>
+
+</html>
